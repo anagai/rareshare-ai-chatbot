@@ -5,7 +5,7 @@ import { clsx } from "clsx";
 import BotMessage from "./ui/bot-message";
 import UserMessage from "./ui/user-message";
 import ChatInput from "./ui/chat-input";
-import { chatCompletion } from "@/actions";
+//import { chatCompletion } from "@/actions";
 
 export type Message = {
   content: string;
@@ -54,12 +54,22 @@ export default function Chatbot() {
       // copy of messages
       const chatMessages = messages.slice(1);
       console.log("CHAT MESSAGES", chatMessages);
+      const newChatMessages = [...chatMessages, newMessage];
+      const response = await fetch('/api/py/chatComplete', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ messages: newChatMessages })
+      }); 
+      const respJson = await response.json();
+      //const answer = data.replace(/^"|"$/g, '');
 
       // Call the chat completion API
-      const res = await chatCompletion([...chatMessages, newMessage]);
-      console.log("RESPONSE", res);
+      //const res = await chatCompletion([...chatMessages, newMessage]);
+      console.log("RESPONSE", respJson);
 
-      setMessages((prevMessages) => [...prevMessages, res]);
+      setMessages((prevMessages) => [...prevMessages, respJson]);
     } catch (error) {
       console.log("API Error", error);
     } finally {
@@ -81,12 +91,12 @@ export default function Chatbot() {
       />
 
       {showChat && (
-        <div className="fixed right-12 bottom-[calc(4rem+1.5rem)] border hover:cursor-pointer p-5 shadow-md shadow-white h-[474px] w-[500px] bg-[#1e1e1e] rounded-md">
+        <div className="fixed right-12 bottom-[calc(4rem+1.5rem)] border hover:cursor-pointer p-5 shadow-md shadow-white h-[700px] w-[1000px] bg-[#1e1e1e] rounded-md text-white">
           <div className="flex flex-col h-full">
             {/* CHAT HEADER  */}
             <div>
               <h2 className="font-semibold text-lg tracking-tight">Chatbot</h2>
-              <p>Powered by OpenAI</p>
+              <p>RareShare</p>
             </div>
 
             {/* CHAT CONTAINER  */}
